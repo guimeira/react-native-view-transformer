@@ -22,9 +22,9 @@ export default class ViewTransformer extends React.Component {
     super(props);
     this.state = {
       //transform state
-      scale: 1,
-      translateX: 0,
-      translateY: 0,
+      scale: typeof this.props.initialScale !== 'undefined' ? this.props.initialScale : 1,
+      translateX: typeof this.props.initialX !== 'undefined' ? this.props.initialX : 0,
+      translateY: typeof this.props.initialY !== 'undefined' ? this.props.initialY : 0,
 
       //animation state
       animator: new Animated.Value(0),
@@ -302,7 +302,7 @@ export default class ViewTransformer extends React.Component {
     let curScale = this.state.scale;
     let scaleBy;
     if (curScale > (1 + this.props.maxScale) / 2) {
-      scaleBy = 1 / curScale;
+      scaleBy = Math.max(1 / curScale, this.props.minScale / curScale);
     } else {
       scaleBy = this.props.maxScale / curScale;
     }
@@ -377,7 +377,7 @@ export default class ViewTransformer extends React.Component {
 
   animateBounce() {
     let curScale = this.state.scale;
-    let minScale = 1;
+    let minScale = this.props.minScale;
     let maxScale = this.props.maxScale;
     let scaleBy = 1;
     if (curScale > maxScale) {
@@ -439,6 +439,7 @@ ViewTransformer.propTypes = {
    */
   maxOverScrollDistance: PropTypes.number,
 
+  minScale: PropTypes.number,
   maxScale: PropTypes.number,
   contentAspectRatio: PropTypes.number,
 
@@ -451,13 +452,24 @@ ViewTransformer.propTypes = {
 
   onTransformGestureReleased: PropTypes.func,
 
-  onSingleTapConfirmed: PropTypes.func
+  onSingleTapConfirmed: PropTypes.func,
+
+  initialScale: PropTypes.number,
+
+  initialX: PropTypes.number,
+
+  initialY: PropTypes.number
 };
 ViewTransformer.defaultProps = {
   maxOverScrollDistance: 20,
   enableScale: true,
   enableTranslate: true,
   enableTransform: true,
+  minScale: 0,
   maxScale: 1,
-  enableResistance: false
+  enableResistance: false,
+  initialScale: 1,
+  initialX: 0,
+  initialY: 0
 };
+
